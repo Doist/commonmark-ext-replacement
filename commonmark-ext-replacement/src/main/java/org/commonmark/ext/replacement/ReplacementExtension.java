@@ -4,6 +4,7 @@ import org.commonmark.Extension;
 import org.commonmark.ext.replacement.internal.ReplacementPostProcessor;
 import org.commonmark.parser.Parser;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -30,23 +31,27 @@ public class ReplacementExtension implements Parser.ParserExtension {
 
     @Override
     public void extend(Parser.Builder parserBuilder) {
-        parserBuilder.postProcessor(new ReplacementPostProcessor(mReplacementMap, mKeysPattern));
+        if (mKeysPattern != null) {
+            parserBuilder.postProcessor(new ReplacementPostProcessor(mReplacementMap, mKeysPattern));
+        }
     }
 
     private static Pattern getKeysPattern(Set<String> keys) {
-        StringBuilder sb = new StringBuilder();
-
-        for (String key : keys) {
-            if (sb.length() == 0) {
-                sb.append("(?<=(^|\\s))(");
-            } else {
-                sb.append('|');
+        if (keys.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("(?<=(^|\\s))(");
+            Iterator<String> iterator = keys.iterator();
+            while (iterator.hasNext()) {
+                sb.append(Pattern.quote(iterator.next()));
+                if (iterator.hasNext()) {
+                    sb.append('|');
+                }
             }
-            sb.append(Pattern.quote(key));
+            sb.append(")(?=($|\\s))");
+
+            return Pattern.compile(sb.toString());
+        } else {
+            return null;
         }
-
-        sb.append(")(?=($|\\s))");
-
-        return Pattern.compile(sb.toString());
     }
 }
