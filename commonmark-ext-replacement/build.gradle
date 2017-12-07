@@ -3,5 +3,5 @@ apply plugin: 'java'
 dependencies {
     implementation 'com.atlassian.commonmark:commonmark:0.10.0'
 
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }
