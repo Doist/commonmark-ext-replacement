@@ -6,12 +6,16 @@ import org.commonmark.node.Text;
 import org.commonmark.parser.PostProcessor;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ReplacementPostProcessor implements PostProcessor {
     private final Map<String, String> mReplacementMap;
+    private final Matcher mKeysMatcher;
 
-    public ReplacementPostProcessor(Map<String, String> replacementMap) {
+    public ReplacementPostProcessor(Map<String, String> replacementMap, Pattern keysPattern) {
         mReplacementMap = replacementMap;
+        mKeysMatcher = keysPattern.matcher("");
     }
 
     @Override
@@ -24,25 +28,18 @@ public class ReplacementPostProcessor implements PostProcessor {
     private void replace(Text text) {
         String literal = text.getLiteral();
 
-        boolean search = true;
+        Matcher matcher = mKeysMatcher.reset(literal);
+
         Node lastNode = text;
         int last = 0;
-        for (int i = 0; i < literal.length(); i++) {
-            if (search) {
-                for (Map.Entry<String, String> entry : mReplacementMap.entrySet()) {
-                    String key = entry.getKey();
-                    if (literal.substring(i).startsWith(key) && isWhitespaceOrEndOfLine(literal, i + key.length())) {
-                        String value = entry.getValue();
-                        if (i != 0) {
-                            lastNode = insertNode(new Text(literal.substring(last, i)), lastNode);
-                        }
-                        lastNode = insertNode(new Text(value), lastNode);
-                        last = i = i + key.length();
-                        break;
-                    }
-                }
+        while (matcher.find()) {
+            String shortcut = matcher.group();
+            if (matcher.start() != last) {
+                lastNode = insertNode(new Text(literal.substring(last, matcher.start())), lastNode);
             }
-            search = isWhitespaceOrEndOfLine(literal, i);
+            Text replacementNode = new Text(mReplacementMap.get(shortcut));
+            lastNode = insertNode(replacementNode, lastNode);
+            last = matcher.end();
         }
 
         if (last != literal.length()) {
@@ -50,10 +47,6 @@ public class ReplacementPostProcessor implements PostProcessor {
         }
 
         text.unlink();
-    }
-
-    private boolean isWhitespaceOrEndOfLine(String string, int position) {
-        return position >= string.length() || Character.isWhitespace(string.charAt(position));
     }
 
     private Node insertNode(Node node, Node insertAfterNode) {
