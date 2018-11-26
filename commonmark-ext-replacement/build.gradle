@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
 dependencies {
-    implementation 'com.atlassian.commonmark:commonmark:0.10.0'
+    implementation 'com.atlassian.commonmark:commonmark:0.12.1'
 
     testImplementation 'junit:junit:4.12'
 }
