@@ -4,6 +4,7 @@ import org.commonmark.Extension;
 import org.commonmark.ext.replacement.internal.ReplacementPostProcessor;
 import org.commonmark.parser.Parser;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +27,7 @@ public class ReplacementExtension implements Parser.ParserExtension {
     }
 
     public static Extension create(Map<String, String> replacementMap) {
-        return new ReplacementExtension(replacementMap, getKeysPattern(replacementMap.keySet()));
+        return new ReplacementExtension(replacementMap, getKeysPattern(replacementMap));
     }
 
     @Override
@@ -36,7 +37,8 @@ public class ReplacementExtension implements Parser.ParserExtension {
         }
     }
 
-    private static Pattern getKeysPattern(Set<String> keys) {
+    private static Pattern getKeysPattern(Map<String, String> replacementMap) {
+        Set<String> keys = new HashSet<>(replacementMap.keySet());
         if (keys.size() > 0) {
             StringBuilder sb = new StringBuilder();
             sb.append("(?<=(^|\\s))(");
