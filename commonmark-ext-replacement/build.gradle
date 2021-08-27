@@ -6,7 +6,7 @@ java {
 }
 
 dependencies {
-    implementation 'com.atlassian.commonmark:commonmark:0.12.1'
+    implementation 'org.commonmark:commonmark:0.18.0'
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
 }
