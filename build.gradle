@@ -1,11 +1,9 @@
-buildscript {
+allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 }
 
-allprojects {
-    repositories {
-        jcenter()
-    }
+tasks.named('wrapper') {
+    distributionType = Wrapper.DistributionType.ALL
 }

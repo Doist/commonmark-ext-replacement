@@ -1,7 +1,12 @@
 apply plugin: 'java'
 
-dependencies {
-    implementation 'com.atlassian.commonmark:commonmark:0.12.1'
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
-    testImplementation 'junit:junit:4.12'
+dependencies {
+    implementation 'org.commonmark:commonmark:0.18.0'
+
+    testImplementation 'junit:junit:4.13.2'
 }
